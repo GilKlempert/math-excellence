@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>מסע מצוינות במתמטיקה</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@400;500;700&display=swap">
+<style>
+/* Layout: atlas expedition — ink-navy chart table with a graticule, parchment cards as "stations", brass route markers */
+:root{
+  --ink:#0e1828; --ink2:#14223a; --ink3:#1c2d4a; --grid:rgba(201,160,78,.09);
+  --parch:#f2e8d0; --parch2:#e7d8b6; --sepia:#2b2417; --sepia2:#6a5a3d;
+  --brass:#c9a04e; --brass2:#e6c67f; --teal:#3a9e97; --teal2:#86d0c9;
+  --good:#2f7d4a; --goodbg:#dceadb; --warn:#a86c0c; --warnbg:#f6e4bf; --bad:#a43a2f; --badbg:#f4d8d1;
+  --muted:#a3b3c8; --fg:#eef1f6;
+  --fd:'Frank Ruhl Libre','David','Times New Roman',serif;
+  --fb:'Heebo','Arial Hebrew','Segoe UI',Arial,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{direction:rtl}
+body{
+  background:var(--ink); color:var(--fg); font-family:var(--fb); font-size:16px; line-height:1.6;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:56px 56px; min-height:100%;
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--ink2)}
+a{color:inherit}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--teal2);outline-offset:2px}
+
+/* top bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ink2);border-bottom:1px solid rgba(201,160,78,.35)}
+.bar-in{max-width:980px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.brand{font-family:var(--fd);font-weight:900;font-size:1.15rem;text-decoration:none;color:var(--brass2);white-space:nowrap}
+.meter{flex:1;display:flex;align-items:center;gap:10px;min-width:160px}
+.track{flex:1;height:8px;border-radius:8px;background:var(--ink3);overflow:hidden;border:1px solid rgba(201,160,78,.25)}
+.fill{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--brass));transition:width .4s ease}
+.cnt,.first{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.first b{color:var(--brass2)}
+
+main{max-width:980px;margin:0 auto;padding-block:24px 60px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* hero */
+.hero{display:flex;gap:22px;align-items:center;margin-bottom:26px}
+.hero svg{flex:none;width:92px;height:92px}
+.hero h1{font-family:var(--fd);font-weight:900;font-size:clamp(1.9rem,5vw,2.8rem);line-height:1.1;margin:0;text-wrap:balance}
+.hero p{margin:.4rem 0 0;color:var(--muted);max-width:62ch}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip-i{font-size:.8rem;letter-spacing:.02em;border:1px solid rgba(201,160,78,.45);color:var(--brass2);padding:3px 10px;border-radius:999px;background:rgba(201,160,78,.07)}
+.chip-i.t{border-color:rgba(58,158,151,.5);color:var(--teal2);background:rgba(58,158,151,.08)}
+
+.howto{background:var(--ink2);border:1px solid rgba(201,160,78,.25);border-radius:6px;padding:14px 18px;margin-bottom:24px;color:var(--muted);font-size:.93rem}
+.howto b{color:var(--fg)}
+.reset{margin-top:8px;font-size:.85rem}
+.linkbtn{background:none;border:none;padding:0;color:var(--teal2);text-decoration:underline;font-size:inherit}
+
+.label{font-size:.76rem;letter-spacing:.14em;color:var(--brass);font-weight:700;margin:0 0 10px}
+
+/* map nodes */
+.map{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:26px}
+@media (max-width:760px){.map{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.node{position:relative;display:flex;flex-direction:column;gap:6px;text-decoration:none;background:var(--parch);color:var(--sepia);
+  border-radius:4px;padding:14px 14px 12px;min-height:150px;overflow:hidden;border:1px solid var(--parch2);
+  box-shadow:0 2px 0 rgba(0,0,0,.35);transition:transform .15s ease}
+.node:hover{transform:translateY(-2px)}
+.node .glyph{position:absolute;left:8px;bottom:-6px;font-family:var(--fd);font-weight:900;font-size:3.1rem;color:rgba(106,90,61,.16);line-height:1;pointer-events:none}
+.pin{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:var(--brass2);font-family:var(--fd);font-weight:700;font-size:1.1rem;border:2px solid var(--brass)}
+.node.done .pin{background:var(--teal);color:#fff;border-color:var(--teal)}
+.node .nm{font-family:var(--fd);font-weight:700;font-size:1.12rem;line-height:1.25}
+.node .sub{font-size:.8rem;color:var(--sepia2);line-height:1.35}
+.node .st{margin-top:auto;font-size:.78rem;font-variant-numeric:tabular-nums;color:var(--sepia2);position:relative}
+.node .mini{height:4px;background:var(--parch2);border-radius:4px;overflow:hidden;margin-top:4px}
+.node .mini i{display:block;height:100%;background:var(--teal)}
+
+.special{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+@media (max-width:760px){.special{grid-template-columns:1fr}}
+.exam-card,.sheet-card{display:flex;flex-direction:column;gap:6px;text-decoration:none;border-radius:4px;padding:18px}
+.exam-card{background:linear-gradient(135deg,var(--ink3),var(--ink2));border:1.5px solid var(--brass)}
+.exam-card h3,.sheet-card h3{font-family:var(--fd);font-size:1.35rem;margin:0;color:var(--brass2)}
+.exam-card p,.sheet-card p{margin:0;color:var(--muted);font-size:.92rem}
+.sheet-card{background:var(--ink2);border:1px dashed rgba(58,158,151,.6)}
+.sheet-card h3{color:var(--teal2)}
+
+/* station view */
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:.9rem;margin-bottom:14px}
+.back:hover{color:var(--brass2)}
+.shead{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.shead .pin{width:48px;height:48px;font-size:1.5rem;flex:none}
+.shead h2{font-family:var(--fd);font-weight:900;font-size:clamp(1.5rem,4vw,2.1rem);margin:0;line-height:1.15;text-wrap:balance}
+.shead .sub{color:var(--muted);font-size:.9rem}
+.key{background:var(--ink2);border-right:3px solid var(--teal);border-radius:4px;padding:14px 18px;margin-bottom:22px}
+.key h4{margin:0 0 6px;font-size:.78rem;letter-spacing:.14em;color:var(--teal2)}
+.key ul{margin:0;padding-right:18px;display:grid;gap:4px}
+.key li{max-width:70ch}
+
+.qlist{display:grid;gap:16px}
+.qcard{background:var(--parch);color:var(--sepia);border-radius:4px;padding:16px 18px;border:2px solid var(--parch2);transition:border-color .2s}
+.qcard[data-state="solved"]{border-color:var(--good)}
+.qcard[data-state="amber"]{border-color:var(--warn)}
+.qcard[data-state="red"]{border-color:var(--bad)}
+.qcard[data-state="revealed"]{border-color:var(--sepia2);border-style:dashed}
+.qhead{display:flex;justify-content:space-between;gap:10px;font-size:.76rem;letter-spacing:.08em;color:var(--sepia2);margin-bottom:6px;flex-wrap:wrap}
+.qhead .qn{font-weight:700}
+.qtext{font-size:1.08rem;font-weight:500;margin-bottom:12px;min-width:0}
+.qbody{min-width:0}
+
+.numrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.numrow input{font:inherit;font-size:1.15rem;width:11rem;max-width:100%;padding:8px 12px;border-radius:4px;border:1.5px solid var(--sepia2);background:#fffaf0;color:var(--sepia);text-align:left;font-variant-numeric:tabular-nums}
+.numrow input:disabled{opacity:.85}
+.unit{color:var(--sepia2)}
+
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.opts.one{grid-template-columns:1fr}
+.opts.nets{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:520px){.opts{grid-template-columns:1fr}.opts.nets{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.opt{text-align:right;padding:10px 12px;border-radius:4px;border:1.5px solid var(--parch2);background:#fffaf0;color:var(--sepia);min-width:0;display:flex;align-items:center;justify-content:flex-start}
+.opts.nets .opt{justify-content:center;color:var(--sepia)}
+.opt:hover:not(:disabled){border-color:var(--sepia2)}
+.opt[aria-pressed="true"]{border-color:var(--ink);background:#fff;box-shadow:inset 0 0 0 1px var(--ink)}
+.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.opt.right{border-color:var(--good);background:var(--goodbg)}
+.opt:disabled{cursor:default}
+
+.otag{font-size:.78rem;color:var(--sepia2);margin:2px 0 6px}
+.slots,.pool{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.slot{min-width:84px;min-height:46px;padding:6px 10px;border-radius:4px;border:1.5px solid var(--sepia2);background:#fffaf0;color:var(--sepia);display:flex;align-items:center;gap:8px}
+.slot.empty{border-style:dashed;background:transparent;color:var(--sepia2);cursor:default}
+.slot .sn{font-size:.72rem;color:var(--sepia2);font-variant-numeric:tabular-nums}
+.chip{padding:8px 12px;border-radius:999px;border:1.5px solid var(--teal);background:#eaf5f3;color:var(--sepia)}
+.slots.ok .slot{border-color:var(--good);background:var(--goodbg)}
+
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}
+.mcol{display:grid;gap:8px;align-content:start}
+.mbtn{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px;border-radius:4px;border:1.5px solid var(--parch2);background:#fffaf0;color:var(--sepia);text-align:right;min-width:0}
+.mbtn.sel{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.mbtn.bad{border-color:var(--bad);background:var(--badbg)}
+.mbtn.good{border-color:var(--good);background:var(--goodbg)}
+.badge{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.75rem;font-weight:700;color:#fff;background:transparent;border:1.5px dashed var(--sepia2)}
+.badge.on{border:none}
+
+.qact{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.btn{padding:8px 18px;border-radius:4px;border:1.5px solid var(--ink);background:var(--ink);color:var(--brass2);font-weight:700}
+.btn:hover{background:var(--ink3)}
+.btn.ghost{background:transparent;color:var(--sepia);border-color:var(--sepia2);font-weight:500}
+.btn.ghost:hover{background:var(--parch2)}
+.btn.brass{background:var(--brass);border-color:var(--brass);color:var(--ink)}
+.btn.brass:hover{background:var(--brass2)}
+.fb{margin-top:12px;padding:10px 14px;border-radius:4px;font-size:.95rem}
+.fb:empty{display:none}
+.fb.good{background:var(--goodbg);color:#1d4a2c;border-right:4px solid var(--good)}
+.fb.warn{background:var(--warnbg);color:#5a3a05;border-right:4px solid var(--warn)}
+.fb.bad{background:var(--badbg);color:#5b1d16;border-right:4px solid var(--bad)}
+.fb.info{background:var(--parch2);color:var(--sepia);border-right:4px solid var(--sepia2)}
+.fb b{display:block;margin-bottom:2px}
+
+.snav{display:flex;justify-content:space-between;gap:10px;margin-top:24px;flex-wrap:wrap}
+.snav a{color:var(--brass2);text-decoration:none;font-weight:500}
+.banner{margin-top:20px;padding:14px 18px;border-radius:4px;background:rgba(58,158,151,.14);border:1px solid var(--teal);color:var(--teal2)}
+
+/* math */
+.m{font-family:var(--fb);font-variant-numeric:tabular-nums;unicode-bidi:isolate}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.8em;line-height:1.1;margin:0 .14em}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding:0 .18em}
+.m sup{font-size:.7em}
+
+/* exam */
+.exam-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.timer{font-variant-numeric:tabular-nums;font-size:1.5rem;font-weight:700;color:var(--brass2);font-family:var(--fd)}
+.timer.low{color:#f08b7c}
+.dots{display:flex;gap:5px;flex-wrap:wrap}
+.dots i{width:12px;height:12px;border-radius:50%;background:var(--ink3);border:1px solid rgba(201,160,78,.4)}
+.dots i.cur{background:var(--brass)}
+.dots i.done{background:var(--teal);border-color:var(--teal)}
+.intro{background:var(--ink2);border:1.5px solid var(--brass);border-radius:4px;padding:22px}
+.intro h2{font-family:var(--fd);font-size:1.8rem;margin:0 0 8px;color:var(--brass2)}
+.intro ul{color:var(--muted);padding-right:20px}
+.score{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.score .big{font-family:var(--fd);font-weight:900;font-size:3.4rem;color:var(--brass2);line-height:1}
+.score .verdict{font-size:1.1rem}
+.break{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 22px}
+.break span{font-size:.82rem;padding:4px 10px;border-radius:999px;border:1px solid}
+.break .ok{border-color:var(--teal);color:var(--teal2)}
+.break .no{border-color:#d58b7f;color:#f0b3a8}
+.rev{display:grid;gap:12px}
+.rev .qcard .stamp{font-size:.8rem;font-weight:700}
+.rev .ok .stamp{color:var(--good)} .rev .no .stamp{color:var(--bad)}
+
+/* sheet */
+.sheet{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:700px){.sheet{grid-template-columns:1fr}}
+.sheet .key{margin:0;background:var(--parch);color:var(--sepia);border-right-color:var(--brass)}
+.sheet .key h4{color:var(--sepia2);font-size:1rem;letter-spacing:0;font-family:var(--fd)}
+.tips{margin-top:18px}
+
+@media (max-width:520px){.hero svg{width:64px;height:64px}.match{gap:8px}.mbtn{padding:8px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+  <a href="#" class="brand">מסע מצוינות</a>
+  <div class="meter"><div class="track"><div class="fill" id="fill"></div></div><span class="cnt" id="cnt">0/0</span></div>
+  <span class="first">בניסיון ראשון: <b id="firstc">0</b></span>
+</div></header>
+<main id="view"></main>
+
+<script>
+document.documentElement.lang='he';document.documentElement.dir='rtl';
+/* ---------- helpers ---------- */
+const view=document.getElementById('view');
+function h(tag,attrs={},html=''){const e=document.createElement(tag);for(const k in attrs){const v=attrs[k];if(k==='class')e.className=v;else if(k.startsWith('on'))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v);}if(html)e.innerHTML=html;return e;}
+function fmt(e){return e.replace(/</g,'&lt;')
+  .replace(/(\d+)\s(\d+)\/(\d+)/g,(_,w,n,d)=>`${w}<span class="fr"><span>${n}</span><span>${d}</span></span>`)
+  .replace(/(\d+)\/(\d+)/g,(_,n,d)=>`<span class="fr"><span>${n}</span><span>${d}</span></span>`)
+  .replace(/\^(\d+)/g,'<sup>$1</sup>');}
+function M(s){return s.replace(/\[\[(.+?)\]\]/g,(_,e)=>`<bdi class="m" dir="ltr">${fmt(e)}</bdi>`);}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function shuffleNotId(n){let a;do{a=shuffle([...Array(n).keys()]);}while(a.every((v,i)=>v===i));return a;}
+function parseAns(s){s=(s||'').replace(/[−–]/g,'-').replace(/[°₪]/g,'').replace(/,/g,'').replace(/\s+/g,' ').trim();if(!s)return null;let m;
+  if(m=s.match(/^(-?\d+) (\d+)\s?\/\s?(\d+)$/))return +m[1]+(+m[2]/+m[3]);
+  if(m=s.match(/^(-?\d+(?:\.\d+)?)\s?\/\s?(\d+(?:\.\d+)?)$/))return +m[2]===0?NaN:+m[1]/+m[2];
+  if(/^-?\d*\.?\d+$/.test(s))return +s;return NaN;}
+function near(v,a){return Math.abs(v-a)<1e-9||(!Number.isInteger(a)&&Math.abs(v-a)<0.006);}
+function net(cells){const s=14,w=(Math.max(...cells.map(c=>c[0]))+1)*s,hh=(Math.max(...cells.map(c=>c[1]))+1)*s;
+  return `<svg viewBox="-2 -2 ${w+4} ${hh+4}" style="height:70px;width:auto;max-width:100%" aria-hidden="true">${cells.map(([x,y])=>`<rect x="${x*s}" y="${y*s}" width="${s}" height="${s}" fill="#c9a04e" fill-opacity=".35" stroke="#2b2417" stroke-width="1.2"/>`).join('')}</svg>`;}
+
+/* ---------- content ---------- */
+const STATIONS=[
+{id:'s1',n:1,name:'מספרים טבעיים ופעולות חשבון',sub:'ארבע פעולות · סדר פעולות · חוקי החשבון',glyph:'÷',
+ key:`<li><b>סדר פעולות:</b> סוגריים ← חזקות ← כפל וחילוק (לפי סדר הופעתם) ← חיבור וחיסור (לפי סדר הופעתם).</li>
+ <li><b>חוק החילוף והקיבוץ:</b> אפשר לשנות סדר ולקבץ בכפל ובחיבור בלבד — לא בחיסור ולא בחילוק.</li>
+ <li><b>חוק הפילוג:</b> [[a × (b + c) = a × b + a × c]] — ועובד גם בכיוון ההפוך (הוצאת גורם משותף).</li>
+ <li><b>זוגות זהב לחישוב בראש:</b> [[25 × 4 = 100]], [[125 × 8 = 1000]], [[5 × 2 = 10]].</li>`,
+ qs:[
+ {t:'num',q:'חשבו: [[48 − 12 : 4 × 3 + 2^3]]',a:47,hint:'קודם החזקה, אחר כך חילוק וכפל לפי סדר הופעתם, ורק בסוף חיבור וחיסור.',sol:'[[2^3 = 8]] ; [[12 : 4 = 3]] ואז [[3 × 3 = 9]] ; [[48 − 9 + 8 = 47]].'},
+ {t:'mcq',q:'היכן צריך להוסיף סוגריים כדי שיתקבל [[6 + 18 : 3 × 2 − 1 = 15]]?',opts:['[[(6 + 18) : 3 × 2 − 1]]','[[6 + 18 : (3 × 2) − 1]]','[[6 + 18 : 3 × (2 − 1)]]','[[(6 + 18) : (3 × 2) − 1]]'],a:0,one:true,hint:'בלי סוגריים יוצא 17. אילו סוגריים משנים את המחולק?',sol:'[[(6 + 18) = 24]], [[24 : 3 = 8]], [[8 × 2 = 16]], [[16 − 1 = 15]].'},
+ {t:'num',q:'חשבו בדרך הקצרה: [[37 × 99 + 37]]',a:3700,hint:'חוק הפילוג עובד גם הפוך — מה משותף לשני המחוברים?',sol:'[[37 × 99 + 37 × 1 = 37 × (99 + 1) = 37 × 100 = 3700]].'},
+ {t:'num',q:'חשבו בלי מחשבון: [[125 × 32 × 25]]',a:100000,ans:'100,000',hint:'פרקו את 32 למכפלה של שני מספרים שמתאימים ל-125 ול-25.',sol:'[[32 = 8 × 4]], ולכן [[(125 × 8) × (4 × 25) = 1000 × 100 = 100000]].'},
+ {t:'num',q:'איזה מספר חסר? [[24 × ☐ = 8 × 15 × 6]]',a:30,hint:'אפשר לחשב את הצד השני, או לשים לב ש-[[24 = 8 × 3]].',sol:'[[8 × 15 × 6 = 720]] ו-[[720 : 24 = 30]]. דרך קצרה: [[8 × 3 × ☐ = 8 × 90]], לכן [[3 × ☐ = 90]] ו-☐ = 30.'}
+ ]},
+{id:'s2',n:2,name:'שברים פשוטים',sub:'צמצום והרחבה · השוואה · בעיות מילוליות',glyph:'¾',
+ key:`<li><b>צמצום והרחבה:</b> מחלקים או כופלים מונה ומכנה באותו מספר — ערך השבר לא משתנה.</li>
+ <li><b>השוואה:</b> מכנה משותף, כפל בהצלבה, או השוואה לשבר "עוגן" כמו [[1/2]] או 1.</li>
+ <li><b>חיבור וחיסור:</b> רק במכנה משותף. מספר מעורב אפשר להפוך לשבר מדומה.</li>
+ <li><b>חילוק:</b> כפל בשבר ההופכי, למשל [[2/5 : 4/7 = 2/5 × 7/4]].</li>
+ <li><b>"חלק מהנותר":</b> עובדים בשלבים — כמה נשאר אחרי כל שלב, ואיזה חלק זה מהשלם.</li>`,
+ qs:[
+ {t:'order',q:'סדרו את השברים מהקטן לגדול:',items:['[[7/12]]','[[3/5]]','[[5/8]]','[[2/3]]'],hint:'נסו מכנה משותף 120, או בדקו בכמה כל שבר גדול מ-[[1/2]].',sol:'במכנה 120: [[70/120 < 72/120 < 75/120 < 80/120]].'},
+ {t:'num',frac:true,q:'חשבו: [[2 1/3 − 1 3/4]]',a:7/12,ans:'7/12',hint:'הפכו את שני המספרים לשברים מדומים והביאו למכנה משותף.',sol:'[[7/3 − 7/4 = 28/12 − 21/12 = 7/12]].'},
+ {t:'num',frac:true,q:'חשבו: [[(3/4 : 3/8) × 5/6]]',a:5/3,ans:'5/3',hint:'חילוק בשבר = כפל בהופכי שלו. מה יוצא בתוך הסוגריים?',sol:'[[3/4 : 3/8 = 3/4 × 8/3 = 2]] ; [[2 × 5/6 = 10/6 = 5/3 = 1 2/3]].'},
+ {t:'num',q:'דנה קראה [[2/5]] מספר ביום הראשון, וביום השני קראה [[1/3]] ממה שנשאר. נשארו לה עוד 80 עמודים. כמה עמודים יש בספר?',a:200,unit:'עמודים',hint:'כמה נשאר אחרי היום הראשון? [[1/3]] מהנותר — איזה חלק זה מכל הספר?',sol:'אחרי יום א׳ נשארו [[3/5]]. ביום ב׳ קראה [[1/3 × 3/5 = 1/5]]. נשארו [[3/5 − 1/5 = 2/5]] מהספר = 80 עמודים, לכן הספר כולו [[80 : 2 × 5 = 200]].'},
+ {t:'mcq',q:'איזה שבר נמצא בדיוק באמצע בין [[1/3]] לבין [[1/2]]?',opts:['[[5/12]]','[[2/5]]','[[1/4]]','[[5/6]]'],a:0,hint:'האמצע של שני מספרים = הסכום שלהם חלקי 2.',sol:'[[(1/3 + 1/2) : 2 = 5/6 : 2 = 5/12]]. בדיקה: [[4/12 < 5/12 < 6/12]].'}
+ ]},
+{id:'s3',n:3,name:'מספרים עשרוניים',sub:'ארבע פעולות · השוואה · המרה לשברים',glyph:'0.5',
+ key:`<li><b>השוואה:</b> משלימים אפסים כך שלכל המספרים אותו מספר ספרות אחרי הנקודה, ואז משווים.</li>
+ <li><b>כפל:</b> מכפילים כמו בשלמים, וסופרים כמה ספרות אחרי הנקודה יש בשני הגורמים יחד.</li>
+ <li><b>חילוק:</b> מזיזים את הנקודה באותו מספר מקומות במחולק ובמחלק, עד שהמחלק שלם: [[2.4 : 0.06 = 240 : 6]].</li>
+ <li><b>המרה לשבר:</b> כותבים כשבר עשרוני ומצמצמים: [[0.25 = 25/100 = 1/4]].</li>`,
+ qs:[
+ {t:'order',q:'סדרו מהקטן לגדול:',items:['[[0.0355]]','[[0.3]]','[[0.305]]','[[0.35]]'],hint:'השלימו אפסים כך שלכולם 4 ספרות אחרי הנקודה.',sol:'[[0.0355 < 0.3000 < 0.3050 < 0.3500]].'},
+ {t:'num',q:'חשבו: [[0.36 : 0.012]]',a:30,hint:'כמה מקומות צריך להזיז את הנקודה כדי ש-[[0.012]] יהיה שלם? הזיזו גם במחולק.',sol:'[[0.36 : 0.012 = 360 : 12 = 30]].'},
+ {t:'match',q:'התאימו כל מספר עשרוני לשבר הפשוט השווה לו:',pairs:[['[[0.125]]','[[1/8]]'],['[[0.375]]','[[3/8]]'],['[[0.04]]','[[1/25]]'],['[[0.6]]','[[3/5]]'],['[[1.75]]','[[7/4]]']],hint:'כתבו כל עשרוני כשבר שמכנהו 10, 100 או 1000 — וצמצמו.',sol:'[[125/1000 = 1/8]], [[375/1000 = 3/8]], [[4/100 = 1/25]], [[6/10 = 3/5]], [[175/100 = 7/4]].'},
+ {t:'num',q:'חשבו בדרך הקצרה: [[2.5 × 0.4 × 1.25 × 8]]',a:10,hint:'חפשו זוגות שמכפלתם מספר עגול.',sol:'[[(2.5 × 0.4) × (1.25 × 8) = 1 × 10 = 10]].'},
+ {t:'mcq',q:'בלי לחשב עד הסוף: איזו תוצאה היא הגדולה ביותר?',opts:['[[0.45 : 0.0005]]','[[4.5 : 0.05]]','[[45 × 0.5]]','[[4.5 × 0.05]]'],a:0,hint:'חילוק במספר קטן מ-1 מגדיל. בכמה כל אחד מגדיל?',sol:'[[0.45 : 0.0005 = 4500 : 5 = 900]] ; [[4.5 : 0.05 = 90]] ; [[45 × 0.5 = 22.5]] ; [[4.5 × 0.05 = 0.225]].'},
+ {t:'num',q:'קילוגרם תפוחים עולה [[7.80]] ₪. כמה עולים [[1.25]] ק״ג?',a:9.75,unit:'₪',hint:'[[1.25 = 1 + 1/4]] — כמה עולה רבע קילו?',sol:'[[7.80 + 7.80 : 4 = 7.80 + 1.95 = 9.75]] ₪.'}
+ ]},
+{id:'s4',n:4,name:'חזקות והתחלקות',sub:'חזקות · כללי התחלקות · כפולות ומחלקים',glyph:'2³',
+ key:`<li><b>חזקה:</b> [[3^4 = 3 × 3 × 3 × 3 = 81]]. כל מספר בחזקת 1 שווה לעצמו.</li>
+ <li><b>התחלקות ב-3 / ב-9:</b> סכום הספרות מתחלק ב-3 / ב-9.</li>
+ <li><b>ב-4 / ב-8:</b> שתי / שלוש הספרות האחרונות מתחלקות ב-4 / ב-8. <b>ב-6:</b> מתחלק גם ב-2 וגם ב-3.</li>
+ <li><b>ב-11:</b> ההפרש בין סכום הספרות במקומות האי־זוגיים לסכום במקומות הזוגיים מתחלק ב-11.</li>
+ <li><b>המחלק המשותף הגדול ביותר / הכפולה המשותפת הקטנה ביותר:</b> פרקו לגורמים ראשוניים. "מתי ייפגשו שוב?" ← כפולה משותפת.</li>`,
+ qs:[
+ {t:'num',q:'חשבו: [[2^5 − 3^3 + 10^2 : 5^2]]',a:9,hint:'חשבו כל חזקה בנפרד, ואז שימו לב לסדר הפעולות.',sol:'[[32 − 27 + 100 : 25 = 32 − 27 + 4 = 9]].'},
+ {t:'num',q:'איזו ספרה צריך לכתוב במקום ☐ כדי שהמספר [[7☐4]] יתחלק ב-9?',a:7,hint:'סכום הספרות צריך להתחלק ב-9.',sol:'[[7 + ☐ + 4 = 11 + ☐]], והמספר היחיד שמתחלק ב-9 בטווח הוא 18, לכן ☐ = 7 ([[774 = 9 × 86]]).'},
+ {t:'num',q:'כמה מחלקים יש למספר 36 (כולל 1 ו-36)?',a:9,hint:'רשמו זוגות של מחלקים שמכפלתם 36.',sol:'[[1×36]], [[2×18]], [[3×12]], [[4×9]], [[6×6]] ← 9 מחלקים (6 נספר פעם אחת).'},
+ {t:'mcq',q:'קו אוטובוס א׳ יוצא מהתחנה כל 12 דקות, וקו ב׳ כל 18 דקות. בשעה [[8:00]] יצאו שניהם יחד. מתי ייצאו שוב יחד לראשונה?',opts:['[[8:36]]','[[8:30]]','[[8:54]]','[[9:12]]'],a:0,hint:'מחפשים את הכפולה המשותפת הקטנה ביותר של 12 ו-18.',sol:'כפולות של 12: 12, 24, 36… כפולות של 18: 18, 36… ← 36 דקות, כלומר [[8:36]].'},
+ {t:'mcq',q:'איזה מספר מתחלק גם ב-4 וגם ב-9, אבל לא ב-8?',opts:['1,116','1,368','1,134','2,016'],a:0,hint:'בדקו כל כלל בנפרד: סכום ספרות, שתי ספרות אחרונות, שלוש ספרות אחרונות.',sol:'1,116: סכום ספרות 9, [[16 : 4 = 4]], אבל [[116 : 8]] אינו שלם. 1,368 ו-2,016 מתחלקים ב-8; ב-1,134 הסיום 34 לא מתחלק ב-4.'},
+ {t:'num',q:'מהו המחלק המשותף הגדול ביותר של 84 ו-126?',a:42,hint:'פרקו כל מספר לגורמים ראשוניים וקחו את המשותף.',sol:'[[84 = 2^2 × 3 × 7]], [[126 = 2 × 3^2 × 7]] ← [[2 × 3 × 7 = 42]].'}
+ ]},
+{id:'s5',n:5,name:'גאומטריה',sub:'משולשים ומרובעים · זוויות · היקף ושטח',glyph:'△',
+ key:`<li><b>סכום זוויות:</b> במשולש 180°, במרובע 360°.</li>
+ <li><b>משולש שווה שוקיים:</b> זוויות הבסיס שוות. <b>שווה צלעות:</b> כל זווית 60°.</li>
+ <li><b>זווית חיצונית</b> של משולש שווה לסכום שתי הזוויות הפנימיות שאינן צמודות לה.</li>
+ <li><b>שטחים:</b> מלבן = אורך × רוחב · משולש = בסיס × גובה : 2 · מקבילית = בסיס × גובה · טרפז = (בסיס + בסיס) × גובה : 2.</li>
+ <li><b>משפחת המרובעים:</b> כל ריבוע הוא גם מלבן וגם מעוין; כל מלבן וכל מעוין הם מקביליות.</li>`,
+ qs:[
+ {t:'num',q:'במשולש שווה שוקיים זווית הראש היא 40°. מה גודלה של זווית בסיס?',a:70,unit:'מעלות',hint:'שתי זוויות הבסיס שוות, וסכום כל הזוויות 180°.',sol:'[[(180 − 40) : 2 = 70]] מעלות.'},
+ {t:'num',q:'במשולש ABC הזווית A היא 50°, והזווית החיצונית ליד הקודקוד C היא 115°. מה גודל הזווית B?',a:65,unit:'מעלות',hint:'זווית חיצונית = סכום שתי הזוויות הפנימיות הרחוקות ממנה.',sol:'[[115 − 50 = 65]] מעלות. (או: הזווית הפנימית C היא [[180 − 115 = 65]], ולכן [[B = 180 − 50 − 65 = 65]].)'},
+ {t:'num',q:'בטרפז אורכי הבסיסים 7 ס״מ ו-13 ס״מ, והגובה 6 ס״מ. מה שטח הטרפז?',a:60,unit:'סמ״ר',hint:'(בסיס + בסיס) × גובה : 2.',sol:'[[(7 + 13) × 6 : 2 = 60]] סמ״ר.'},
+ {t:'num',q:'היקף ריבוע הוא 36 ס״מ. חותכים אותו ל-3 מלבנים זהים (פסים). מה היקף כל מלבן?',a:24,unit:'ס״מ',hint:'מצאו קודם את צלע הריבוע. מה המידות של כל פס?',sol:'צלע הריבוע [[36 : 4 = 9]]. כל פס הוא 9 על 3, והיקפו [[2 × (9 + 3) = 24]] ס״מ.'},
+ {t:'mcq',q:'איזו טענה נכונה תמיד?',opts:['כל ריבוע הוא מעוין','כל מלבן הוא ריבוע','כל טרפז הוא מקבילית','במעוין האלכסונים שווים זה לזה'],a:0,one:true,hint:'חשבו על התכונות שמגדירות כל צורה.',sol:'במעוין כל הצלעות שוות — וזה מתקיים בכל ריבוע. מלבן לא חייב צלעות שוות, בטרפז רק זוג אחד מקביל, ובמעוין האלכסונים שווים רק כשהוא ריבוע.'},
+ {t:'num',q:'מידות מלבן הן 8 ס״מ על 5 ס״מ. מגדילים כל צלע פי 1.5. פי כמה גדל השטח?',a:2.25,hint:'חשבו את השטח לפני ואחרי — או חשבו מה קורה לשטח כשכל צלע גדלה פי 1.5.',sol:'לפני: [[8 × 5 = 40]]. אחרי: [[12 × 7.5 = 90]]. [[90 : 40 = 2.25]], כלומר [[1.5 × 1.5]].'}
+ ]},
+{id:'s6',n:6,name:'גופים תלת־ממדיים',sub:'תיבות ומנסרות · פריסות · נפח',glyph:'3D',
+ key:`<li><b>תיבה:</b> 6 פאות, 12 מקצועות, 8 קודקודים.</li>
+ <li><b>מנסרה שבסיסה מצולע עם n צלעות:</b> [[n + 2]] פאות, [[3 × n]] מקצועות, [[2 × n]] קודקודים.</li>
+ <li><b>נפח תיבה</b> = אורך × רוחב × גובה. <b>שטח פנים</b> = סכום השטחים של 6 הפאות.</li>
+ <li><b>נפח ונוזלים:</b> 1 ליטר = 1,000 סמ״ק.</li>
+ <li><b>פריסות:</b> דמיינו שבוחרים פאה אחת כבסיס ו"מקפלים" את השאר סביבה — האם שתי פאות נופלות על אותו מקום?</li>`,
+ qs:[
+ {t:'num',q:'כמה מקצועות יש למנסרה שבסיסה משושה?',a:18,hint:'בכל בסיס יש מקצועות, ויש גם מקצועות שמחברים בין הבסיסים.',sol:'6 בכל בסיס × 2 + 6 מקצועות צדדיים = [[3 × 6 = 18]].'},
+ {t:'num',q:'מידות תיבה: 4 ס״מ, 5 ס״מ ו-6 ס״מ. מהו שטח הפנים שלה?',a:148,unit:'סמ״ר',hint:'יש שלושה זוגות של פאות חופפות.',sol:'[[2 × (4×5 + 4×6 + 5×6) = 2 × (20 + 24 + 30) = 148]] סמ״ר.'},
+ {t:'num',q:'באקווריום בצורת תיבה האורך 30 ס״מ, הרוחב 20 ס״מ, וגובה המים 15 ס״מ. כמה ליטרים מים יש בו?',a:9,unit:'ליטר',hint:'חשבו נפח בסמ״ק, ואז המירו.',sol:'[[30 × 20 × 15 = 9000]] סמ״ק = 9 ליטר.'},
+ {t:'mcq',q:'איזו מבין הצורות <b>אינה</b> פריסה של קובייה?',opts:[net([[0,0],[1,0],[2,0],[0,1],[1,1],[2,1]]),net([[1,0],[0,1],[1,1],[2,1],[1,2],[1,3]]),net([[0,0],[0,1],[1,1],[2,1],[3,1],[3,2]]),net([[0,0],[1,0],[1,1],[2,1],[2,2],[3,2]])],a:0,nets:true,hint:'נסו לקפל כל אחת בדמיון. כמה ריבועים יכולים להיפגש סביב קודקוד אחד של קובייה?',sol:'מלבן של 2×3 ריבועים: כשמקפלים אותו, שתי פאות נופלות זו על זו ונשאר חור. בקובייה נפגשות בכל קודקוד רק 3 פאות — וכאן יש קודקודים שבהם נפגשים 4 ריבועים.'},
+ {t:'num',q:'קובייה גדולה בנויה מ-27 קוביות קטנות ([[3 × 3 × 3]]). צובעים את כל הצד החיצוני. כמה קוביות קטנות צבועות <b>בדיוק בשתי</b> פאות?',a:12,hint:'איפה נמצאות קוביות עם שתי פאות צבועות — בפינה, באמצע פאה או על מקצוע?',sol:'על כל אחד מ-12 המקצועות יש קובייה אחת באמצע (לא בפינה) ← 12 קוביות. (8 בפינות צבועות ב-3 פאות.)'},
+ {t:'num',q:'פי כמה גדל נפח של קובייה כשמכפילים את אורך המקצוע שלה פי 2?',a:8,hint:'נסו דוגמה: קובייה במקצוע 1 וקובייה במקצוע 2.',sol:'[[2 × 2 × 2 = 8]]: נפח [[1]] הופך ל-[[8]].'}
+ ]},
+{id:'s7',n:7,name:'מדידות והמרות',sub:'אורך · שטח · נפח · משקל · זמן',glyph:'ק״מ',
+ key:`<li><b>אורך:</b> 1 ק״מ = 1,000 מ׳ · 1 מ׳ = 100 ס״מ · 1 ס״מ = 10 מ״מ.</li>
+ <li><b>שטח ונפח:</b> ביחידות שטח מכפילים את יחס האורך <b>פעמיים</b>, ביחידות נפח — <b>שלוש פעמים</b>.</li>
+ <li><b>משקל:</b> 1 טון = 1,000 ק״ג · 1 ק״ג = 1,000 גרם · 1 גרם = 1,000 מ״ג.</li>
+ <li><b>זמן:</b> שעה = 60 דקות = 3,600 שניות. בחישובי שעון — "משלימים לשעה עגולה".</li>
+ <li><b>מעבר מיחידה גדולה לקטנה</b> ← כופלים; <b>מקטנה לגדולה</b> ← מחלקים.</li>`,
+ qs:[
+ {t:'match',q:'התאימו בין היחידות:',pairs:[['1 מ״ר','10,000 סמ״ר'],['1 ליטר','1,000 סמ״ק'],['1 קמ״ר','1,000,000 מ״ר'],['1 טון','1,000 ק״ג'],['1 מ״ק','1,000 ליטר']],hint:'כמה ס״מ במטר? ומה קורה כשעוברים לשטח או לנפח?',sol:'[[100 × 100 = 10000]] סמ״ר; ליטר = 1,000 סמ״ק; [[1000 × 1000]] מ״ר בקמ״ר; טון = 1,000 ק״ג; מ״ק = [[100 × 100 × 100]] סמ״ק = 1,000 ליטר.'},
+ {t:'num',q:'כמה דקות הן בסך הכול [[2.5]] שעות ועוד 1,500 שניות?',a:175,unit:'דקות',hint:'המירו כל חלק לדקות בנפרד.',sol:'[[2.5 × 60 = 150]] דקות; [[1500 : 60 = 25]] דקות; ביחד 175.'},
+ {t:'num',q:'חשבו: [[3.2]] ק״מ פחות 450 מ׳. כתבו את התשובה במטרים.',a:2750,ans:'2,750',unit:'מטר',hint:'המירו קודם את הק״מ למטרים.',sol:'[[3.2 × 1000 = 3200]] מ׳; [[3200 − 450 = 2750]] מ׳.'},
+ {t:'order',q:'סדרו מהקל לכבד:',items:['5,000 מ״ג','450 גרם','[[0.5]] ק״ג','[[0.048]] טון'],hint:'המירו הכול לגרמים.',sol:'5,000 מ״ג = 5 גרם; 450 גרם; [[0.5]] ק״ג = 500 גרם; [[0.048]] טון = 48 ק״ג = 48,000 גרם.'},
+ {t:'mcq',q:'רכבת יצאה ב-[[21:47]] ונסעה שעתיים ו-38 דקות. באיזו שעה הגיעה?',opts:['[[00:25]]','[[24:25]]','[[23:85]]','[[00:15]]'],a:0,hint:'"השלימו" קודם לשעה עגולה.',sol:'[[21:47]] + 13 דק׳ = [[22:00]]. נשארו שעתיים ו-25 דקות ← [[00:25]].'},
+ {t:'num',q:'חדר במידות 4 מ׳ על [[3.5]] מ׳ מרצפים במרצפות ריבועיות שצלען 50 ס״מ. כמה מרצפות צריך?',a:56,unit:'מרצפות',hint:'כמה מרצפות נכנסות לאורך? ולרוחב?',sol:'לאורך: [[4 : 0.5 = 8]], לרוחב: [[3.5 : 0.5 = 7]] ← [[8 × 7 = 56]]. (או: [[14 : 0.25 = 56]].)'}
+ ]},
+{id:'s8',n:8,name:'חשיבה מתמטית ואתגרי מצוינות',sub:'סדרות · חוקיות · חידות · בעיות רב־שלביות',glyph:'…',
+ key:`<li><b>סדרות:</b> בדקו הפרשים, ואם הם לא קבועים — בדקו את ההפרשים שלהם, או יחס (כפל).</li>
+ <li><b>שיטת גאוס:</b> מחברים זוגות מהקצוות — הראשון והאחרון, השני והלפני־אחרון…</li>
+ <li><b>"נניח ש…":</b> מניחים שכולם מאותו סוג, ובודקים כמה "חסר" או "עודף".</li>
+ <li><b>טבלה / ספירה מסודרת:</b> סופרים לפי גודל, לפי סוג — כדי לא לפספס ולא לספור פעמיים.</li>
+ <li><b>מחזוריות:</b> ספרת האחדות של חזקות חוזרת בקבוצות — מחפשים את המחזור.</li>`,
+ qs:[
+ {t:'num',q:'מהו המספר הבא בסדרה? [[2, 5, 11, 23, 47, …]]',a:95,hint:'בדקו את ההפרשים: 3, 6, 12, 24… או נסו לקשר כל איבר לקודם בכפל.',sol:'כל איבר = פי 2 מהקודם ועוד 1: [[47 × 2 + 1 = 95]].'},
+ {t:'num',q:'בסדרה [[1, 4, 9, 16, …]] — מהו האיבר ה-15?',a:225,hint:'איך קשור כל איבר למקום שלו בסדרה?',sol:'האיבר במקום n הוא [[n × n]], ולכן [[15 × 15 = 225]].'},
+ {t:'num',q:'חשבו: [[1 + 2 + 3 + … + 100]]',a:5050,ans:'5,050',hint:'חברו זוגות: [[1 + 100]], [[2 + 99]]… כמה זוגות יש?',sol:'50 זוגות, כל אחד שווה 101: [[50 × 101 = 5050]].'},
+ {t:'num',q:'בחווה יש תרנגולות ופרות. סופרים 30 ראשים ו-84 רגליים. כמה פרות יש בחווה?',a:12,unit:'פרות',hint:'נניח שכולן תרנגולות — כמה רגליים היו? כמה רגליים "חסרות"?',sol:'אם כולן תרנגולות: [[30 × 2 = 60]] רגליים. חסרות 24. כל פרה מוסיפה 2 ← [[24 : 2 = 12]] פרות (ו-18 תרנגולות; בדיקה: [[48 + 36 = 84]]).'},
+ {t:'num',q:'כמה ריבועים מכל הגדלים יש בלוח משבצות של [[4 × 4]]?',a:30,hint:'ספרו בנפרד ריבועים של [[1×1]], [[2×2]], [[3×3]] ו-[[4×4]].',sol:'[[16 + 9 + 4 + 1 = 30]].'},
+ {t:'num',q:'במספר דו־ספרתי סכום הספרות הוא 11. אם מחליפים בין הספרות, המספר גדל ב-27. מהו המספר?',a:47,hint:'החלפת ספרות משנה את המספר בכפולה של 9. מה ההפרש בין הספרות?',sol:'הגידול = [[9 × (הפרש הספרות)]], כלומר ההפרש הוא 3. ספרות שסכומן 11 והפרשן 3: 4 ו-7 ← 47 (בדיקה: [[74 − 47 = 27]]).'},
+ {t:'num',q:'בונים שורה של ריבועים מגפרורים: ריבוע אחד — 4 גפרורים, שני ריבועים — 7, שלושה — 10. כמה גפרורים צריך ל-20 ריבועים?',a:61,unit:'גפרורים',hint:'כל ריבוע חדש מוסיף כמה גפרורים?',sol:'גפרור התחלה + 3 לכל ריבוע: [[1 + 3 × 20 = 61]].'},
+ {t:'mcq',q:'מהי ספרת האחדות של [[3^2026]]?',opts:['9','1','3','7'],a:0,hint:'כתבו את ספרות האחדות של [[3^1]], [[3^2]], [[3^3]], [[3^4]], [[3^5]]… ומצאו מחזור.',sol:'ספרות האחדות חוזרות במחזור 3, 9, 7, 1 (אורך 4). [[2026 = 4 × 506 + 2]], לכן כמו [[3^2]] ← 9.'}
+ ]}
+];
+const ALLQ=[];STATIONS.forEach(s=>s.qs.forEach((q,i)=>{q.id=s.id+'q'+i;q.st=s;ALLQ.push(q);}));
+const SBY=Object.fromEntries(STATIONS.map(s=>[s.id,s]));
+const TYPE={num:'תשובה פתוחה',mcq:'בחירה',order:'סידור',match:'התאמה'};
+const PAIRC=['#2f7d74','#9a5b1f','#5a4a8a','#8a3f52','#3f6a2e'];
+const KEY='math-excellence-v1';let state={};
+try{const raw=localStorage.getItem(KEY);if(raw){const d=JSON.parse(raw);if(d&&typeof d==='object')state=d;}}catch(e){}
+for(const k in state){if(!['solved','revealed'].includes(state[k].status))state[k].status=state[k].tries?'amber':'open';}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+const S=q=>state[q.id]||(state[q.id]={status:'open',tries:0});
+
+/* ---------- widgets ---------- */
+const W={
+num(q,body){const row=h('div',{class:'numrow'});const inp=h('input',{type:'text',inputmode:q.frac?'text':'decimal',dir:'ltr',id:'in-'+q.id+(body.dataset.ex||''),autocomplete:'off','aria-label':'התשובה',placeholder:q.frac?'למשל 3/4 או 1 2/3':''});
+ row.append(inp);if(q.unit)row.append(h('span',{class:'unit'},q.unit));body.append(row);
+ inp.addEventListener('keydown',e=>{if(e.key==='Enter')body.parentElement.querySelector('.go')?.click();});
+ return{get(){return parseAns(inp.value)},check(v){return near(v,q.a)},mark(){},lock(){inp.disabled=true},show(){inp.value=q.ans||String(q.a);inp.disabled=true}};},
+mcq(q,body){const ord=q._ord||(q._ord=shuffle(q.opts.map((_,i)=>i)));let sel=null;
+ const g=h('div',{class:'opts'+(q.one?' one':'')+(q.nets?' nets':'')});
+ const bs=ord.map(i=>{const b=h('button',{type:'button',class:'opt','aria-pressed':'false'},M(q.opts[i]));b.dataset.i=i;
+  b.onclick=()=>{sel=i;bs.forEach(x=>{x.setAttribute('aria-pressed','false');x.classList.remove('wrong')});b.setAttribute('aria-pressed','true')};g.append(b);return b;});
+ body.append(g);
+ return{get(){return sel},check(v){return v===q.a},mark(ok){if(!ok)bs.find(b=>+b.dataset.i===sel)?.classList.add('wrong')},lock(){bs.forEach(b=>b.disabled=true)},show(){bs.forEach(b=>{b.disabled=true;if(+b.dataset.i===q.a)b.classList.add('right')})}};},
+order(q,body){const ord=q._ord||(q._ord=shuffleNotId(q.items.length));let seq=[],locked=false;const n=q.items.length;
+ const tag=h('div',{class:'otag'},'לחצו על הפריטים לפי הסדר. מקום 1 = הקטן ביותר. לחיצה על פריט שכבר שובץ מחזירה אותו.');
+ const slots=h('div',{class:'slots'}),pool=h('div',{class:'pool'});body.append(tag,slots,pool);
+ function draw(){slots.innerHTML='';for(let k=0;k<n;k++){const i=seq[k];const s=h('button',{type:'button',class:'slot'+(i==null?' empty':'')},`<span class="sn">${k+1}</span>`+(i==null?'':M(q.items[i])));
+   if(i!=null)s.onclick=()=>{if(locked)return;seq.splice(k,1);draw()};else s.disabled=true;slots.append(s);}
+  pool.innerHTML='';ord.forEach(i=>{if(seq.includes(i))return;const b=h('button',{type:'button',class:'chip'},M(q.items[i]));b.onclick=()=>{if(locked)return;seq.push(i);draw()};pool.append(b);});}
+ draw();
+ return{get(){return seq.length===n?seq.slice():null},check(v){return v.every((x,k)=>x===k)},mark(){},lock(){locked=true},show(){seq=[...Array(n).keys()];locked=true;draw();slots.classList.add('ok')}};},
+match(q,body){const n=q.pairs.length;const ro=q._ord||(q._ord=shuffleNotId(n));let pairs=Array(n).fill(null),sel=null,locked=false,marks=null;
+ const tag=h('div',{class:'otag'},'בחרו פריט בעמודה הימנית ואז את המתאים לו בשמאלית.');
+ const wrap=h('div',{class:'match'}),L=h('div',{class:'mcol'}),R=h('div',{class:'mcol'});wrap.append(L,R);body.append(tag,wrap);
+ function badge(k){return k==null?'<span class="badge"></span>':`<span class="badge on" style="background:${PAIRC[k]}">${k+1}</span>`;}
+ function draw(){L.innerHTML='';R.innerHTML='';
+  q.pairs.forEach((p,i)=>{const b=h('button',{type:'button',class:'mbtn'+(sel===i?' sel':'')+(marks?(marks[i]?' good':' bad'):'')},`<span>${M(p[0])}</span>`+badge(pairs[i]==null?null:i));
+   b.onclick=()=>{if(locked)return;marks=null;sel=i;draw()};L.append(b);});
+  ro.forEach(j=>{const owner=pairs.indexOf(j);const b=h('button',{type:'button',class:'mbtn'},`<span>${M(q.pairs[j][1])}</span>`+badge(owner<0?null:owner));
+   b.onclick=()=>{if(locked||sel==null)return;marks=null;const prev=pairs.indexOf(j);if(prev>=0)pairs[prev]=null;pairs[sel]=j;const nx=pairs.indexOf(null);sel=nx>=0?nx:null;draw()};R.append(b);});}
+ sel=0;draw();
+ return{get(){return pairs.includes(null)?null:pairs.slice()},check(v){return v.every((x,i)=>x===i)},mark(ok){if(!ok){marks=pairs.map((x,i)=>x===i);draw()}},
+  detail(v){const c=v.filter((x,i)=>x===i).length;return `${c} מתוך ${n} התאמות נכונות.`},lock(){locked=true;sel=null;draw()},show(){pairs=[...Array(n).keys()];locked=true;sel=null;marks=null;draw()}};}
+};
+
+/* ---------- practice card ---------- */
+function card(q,i){const st=S(q);const c=h('article',{class:'qcard','data-state':st.status});
+ c.append(h('div',{class:'qhead'},`<span class="qn">שאלה ${i+1}</span><span>${TYPE[q.t]}</span>`));
+ c.append(h('div',{class:'qtext'},M(q.q)));const body=h('div',{class:'qbody'});c.append(body);
+ const w=W[q.t](q,body);const act=h('div',{class:'qact'});const fb=h('div',{class:'fb',role:'status','aria-live':'polite'});
+ const chk=h('button',{type:'button',class:'btn go'},'בדיקה');const rev=h('button',{type:'button',class:'btn ghost'},'הצגת פתרון');rev.hidden=true;
+ act.append(chk,rev);c.append(act,fb);
+ const finish=(cls,title)=>{w.lock();act.hidden=true;fb.className='fb '+cls;fb.innerHTML=`<b>${title}</b>${M(q.sol)}`;};
+ if(st.status==='solved'){w.show();finish('good',st.first?'נכון מהניסיון הראשון':'נכון');}
+ else if(st.status==='revealed'){w.show();finish('info','הפתרון:');}
+ else if(st.tries>0)rev.hidden=false;
+ chk.onclick=()=>{const v=w.get();
+  if(v==null){fb.className='fb info';fb.innerHTML='השלימו את התשובה לפני הבדיקה.';return;}
+  if(typeof v==='number'&&Number.isNaN(v)){fb.className='fb info';fb.innerHTML='לא הצלחתי לקרוא את המספר. כתבו למשל 47, 2.25 או 7/12.';return;}
+  const ok=w.check(v);st.tries++;w.mark(ok);
+  if(ok){st.status='solved';st.first=st.tries===1;finish('good',st.first?'נכון מהניסיון הראשון':'נכון');}
+  else{const extra=w.detail?w.detail(v)+' ':'';rev.hidden=false;
+   if(st.tries===1){st.status='amber';fb.className='fb warn';fb.innerHTML=`<b>עוד לא. ${extra}רמז:</b>${M(q.hint)}`;}
+   else{st.status='red';fb.className='fb bad';fb.innerHTML=`<b>עדיין לא מדויק.</b>${extra}נסו שוב, או הציגו את הפתרון.`;}}
+  c.dataset.state=st.status;progress();};
+ rev.onclick=()=>{st.status='revealed';w.show();finish('info','הפתרון:');c.dataset.state=st.status;progress();};
+ return c;}
+
+/* ---------- progress ---------- */
+function stCount(s){const d=s.qs.filter(q=>['solved','revealed'].includes(S(q).status)).length;return{d,n:s.qs.length};}
+function progress(){save();const d=ALLQ.filter(q=>['solved','revealed'].includes(S(q).status)).length;const f=ALLQ.filter(q=>S(q).first).length;
+ document.getElementById('fill').style.width=(d/ALLQ.length*100)+'%';document.getElementById('cnt').textContent=`${d}/${ALLQ.length} שאלות`;
+ document.getElementById('firstc').textContent=f;
+ const cur=SBY[location.hash.slice(1)];const ban=document.getElementById('banner');
+ if(cur&&ban){const c=stCount(cur);ban.hidden=c.d<c.n;}}
+
+/* ---------- views ---------- */
+const compass=`<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="#c9a04e" stroke-width="1.5"/><circle cx="50" cy="50" r="38" fill="none" stroke="#c9a04e" stroke-width=".8" stroke-dasharray="2 3"/>
+<path d="M50 8 L57 50 L50 92 L43 50Z" fill="#c9a04e"/><path d="M50 8 L57 50 L43 50Z" fill="#e6c67f"/><path d="M8 50 L50 44 L92 50 L50 56Z" fill="#3a9e97" opacity=".85"/><circle cx="50" cy="50" r="4" fill="#0e1828" stroke="#e6c67f"/>
+<text x="50" y="6" font-size="7" fill="#e6c67f" text-anchor="middle" font-family="Heebo">צ</text></svg>`;
+function daysLeft(){const t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(2026,10,2)-t)/86400000);}
+
+function renderMap(){const dl=daysLeft();
+ view.innerHTML=`<section class="hero">${compass}<div><h1>מסע מצוינות במתמטיקה</h1>
+ <p>הכנה למבחן האיתור לקבוצת המצוינות — כל שמונת הנושאים של בוגרי כיתה ו׳, בשאלות ברמת אתגר.</p>
+ <div class="chips"><span class="chip-i">יום שני, כ״ב בחשוון · 2.11.26</span>${dl>0?`<span class="chip-i t">עוד ${dl} ${dl===1?'יום':'ימים'} למבחן</span>`:dl===0?'<span class="chip-i t">המבחן היום — בהצלחה!</span>':''}<span class="chip-i">${ALLQ.length} שאלות · 8 תחנות</span></div></div></section>
+ <div class="howto"><b>איך עובדים:</b> בוחרים תחנה בכל סדר. כל תחנה נפתחת בתזכורת קצרה ואז שאלות. טעות ראשונה ← רמז; אחריה אפשר לנסות שוב או להציג פתרון מלא. בסוף — <b>סימולציית מבחן</b> של 12 שאלות ב-20 דקות. ההתקדמות נשמרת במכשיר הזה, גם אחרי סגירה.
+ <div class="reset" id="reset"><button type="button" class="linkbtn" id="rs1">איפוס כל ההתקדמות</button></div></div>
+ <p class="label">תחנות המסע · לפי רשימת הנושאים של בית הספר</p><div class="map" id="map"></div>
+ <p class="label">לפני המבחן</p><div class="special">
+  <a class="exam-card" href="#exam"><h3>סימולציית מבחן</h3><p>12 שאלות מכל הנושאים, 20 דקות, בלי רמזים. בסוף: ציון, פירוט לפי נושא ופתרונות מלאים.</p></a>
+  <a class="sheet-card" href="#sheet"><h3>דף נוסחאות וכללים</h3><p>כל התזכורות של התחנות בעמוד אחד, וטיפים ליום המבחן.</p></a></div>`;
+ const rs=document.getElementById('reset');document.getElementById('rs1').onclick=()=>{rs.innerHTML='למחוק את כל ההתקדמות? <button type="button" class="linkbtn" id="rsy">כן, לאפס</button> · <button type="button" class="linkbtn" id="rsn">ביטול</button>';
+  document.getElementById('rsy').onclick=()=>{state={};save();renderMap();progress();};document.getElementById('rsn').onclick=renderMap;};
+ const map=document.getElementById('map');
+ STATIONS.forEach(s=>{const c=stCount(s);const done=c.d===c.n;
+  map.append(h('a',{class:'node'+(done?' done':''),href:'#'+s.id},`<span class="pin">${done?'✓':s.n}</span><span class="nm">${s.name}</span><span class="sub">${s.sub}</span>
+  <span class="st">${c.d}/${c.n} שאלות<span class="mini"><i style="width:${c.d/c.n*100}%"></i></span></span><span class="glyph">${s.glyph==='2³'?'2<sup>3</sup>':s.glyph}</span>`));});}
+
+function renderStation(s){view.innerHTML='';
+ view.append(h('a',{class:'back',href:'#'},'→ חזרה למפה'));
+ view.append(h('div',{class:'shead'},`<span class="pin">${s.n}</span><div><h2>${s.name}</h2><div class="sub">${s.sub}</div></div>`));
+ view.append(h('div',{class:'key'},`<h4>תזכורת לפני שמתחילים</h4><ul>${M(s.key)}</ul>`));
+ const list=h('div',{class:'qlist'});s.qs.forEach((q,i)=>list.append(card(q,i)));view.append(list);
+ const ban=h('div',{class:'banner',id:'banner'},'התחנה הושלמה. אפשר להמשיך לתחנה הבאה או לנסות את סימולציית המבחן.');view.append(ban);
+ const prev=STATIONS[s.n-2],next=STATIONS[s.n];
+ view.append(h('div',{class:'snav'},(prev?`<a href="#${prev.id}">→ ${prev.name}</a>`:'<span></span>')+(next?`<a href="#${next.id}">${next.name} ←</a>`:'<a href="#exam">לסימולציית המבחן ←</a>')));
+ progress();}
+
+function renderSheet(){view.innerHTML='';view.append(h('a',{class:'back',href:'#'},'→ חזרה למפה'));
+ view.append(h('div',{class:'shead'},`<div><h2>דף נוסחאות וכללים</h2><div class="sub">כל התזכורות של שמונה התחנות</div></div>`));
+ const g=h('div',{class:'sheet'});STATIONS.forEach(s=>g.append(h('div',{class:'key'},`<h4>${s.n}. ${s.name}</h4><ul>${M(s.key)}</ul>`)));view.append(g);
+ view.append(h('div',{class:'key tips'},`<h4>ביום המבחן</h4><ul><li>קראו את כל השאלה, וסמנו מה בדיוק שואלים.</li><li>הערכה לפני חישוב: האם התשובה צריכה להיות גדולה או קטנה מ-1? בערך כמה?</li><li>בדקו תשובה בדרך הפוכה (כפל ← חילוק, הצבה בשאלה).</li><li>שאלה תוקעת? דלגו וחזרו אליה בסוף.</li><li>בבעיות מילוליות — כתבו כל שלב בשורה נפרדת.</li></ul>`));}
+
+/* ---------- exam ---------- */
+let exam=null,tick=null;
+function startExam(){let pick=STATIONS.map(s=>s.qs[Math.floor(Math.random()*s.qs.length)]);
+ const rest=shuffle(ALLQ.filter(q=>!pick.includes(q))).slice(0,4);pick=shuffle(pick.concat(rest));
+ exam={qs:pick,i:0,res:[],start:Date.now(),end:Date.now()+20*60000,done:false};clearInterval(tick);tick=setInterval(tickFn,500);renderExam();}
+function tickFn(){if(!exam||exam.done){clearInterval(tick);return;}const left=exam.end-Date.now();
+ if(left<=0){finishExam();return;}const el=document.getElementById('timer');
+ if(el){const m=Math.floor(left/60000),s=Math.floor(left%60000/1000);el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;el.classList.toggle('low',left<120000);}}
+function finishExam(){while(exam.res.length<exam.qs.length)exam.res.push(null);exam.done=true;exam.used=Math.min(Date.now(),exam.end)-exam.start;clearInterval(tick);if(location.hash==='#exam')renderExam();}
+function renderExam(){view.innerHTML='';view.append(h('a',{class:'back',href:'#'},'→ חזרה למפה'));
+ if(!exam){const box=h('div',{class:'intro'},`<h2>סימולציית מבחן</h2><ul><li>12 שאלות — לפחות אחת מכל נושא, בסדר אקראי.</li><li>20 דקות. השעון ממשיך לרוץ גם אם יוצאים למפה.</li><li>בלי רמזים ובלי משוב באמצע — כמו במבחן אמיתי. אפשר לדלג.</li><li>בסוף: ציון, פירוט לפי נושא ופתרון מלא לכל שאלה.</li></ul>`);
+  const b=h('button',{type:'button',class:'btn brass'},'התחלת הסימולציה');b.onclick=startExam;box.append(b);view.append(box);return;}
+ if(exam.done){renderResults();return;}
+ const q=exam.qs[exam.i];const top=h('div',{class:'exam-top'});
+ const dots=h('div',{class:'dots','aria-label':`שאלה ${exam.i+1} מתוך ${exam.qs.length}`});exam.qs.forEach((_,k)=>dots.append(h('i',{class:k<exam.i?'done':k===exam.i?'cur':''})));
+ top.append(h('div',{},`<div class="label" style="margin:0">שאלה ${exam.i+1} מתוך ${exam.qs.length}</div>`),dots,h('div',{class:'timer',id:'timer'},'--:--'));view.append(top);
+ const c=h('article',{class:'qcard'});c.append(h('div',{class:'qhead'},`<span class="qn">${q.st.name}</span><span>${TYPE[q.t]}</span>`));
+ c.append(h('div',{class:'qtext'},M(q.q)));const body=h('div',{class:'qbody','data-ex':'x'});c.append(body);const w=W[q.t](q,body);
+ const act=h('div',{class:'qact'}),fb=h('div',{class:'fb',role:'status'});
+ const go=h('button',{type:'button',class:'btn go'},exam.i===exam.qs.length-1?'שליחה וסיום':'שליחה והמשך');const skip=h('button',{type:'button',class:'btn ghost'},'דילוג');
+ act.append(go,skip);c.append(act,fb);view.append(c);
+ const advance=r=>{exam.res.push(r);exam.i++;if(exam.i>=exam.qs.length)finishExam();else{renderExam();window.scrollTo(0,0);}};
+ go.onclick=()=>{const v=w.get();if(v==null){fb.className='fb info';fb.textContent='השלימו את התשובה, או לחצו "דילוג".';return;}
+  if(typeof v==='number'&&Number.isNaN(v)){fb.className='fb info';fb.textContent='לא הצלחתי לקרוא את המספר. כתבו למשל 47, 2.25 או 7/12.';return;}advance(w.check(v));};
+ skip.onclick=()=>advance(null);tickFn();}
+function renderResults(){const ok=exam.res.filter(r=>r===true).length,n=exam.qs.length;const mins=Math.max(1,Math.round(exam.used/60000));
+ const verdict=ok>=11?'רמת נבחרת. מצוין!':ok>=8?'קרוב מאוד. חזרו על הנושאים המסומנים ונסו שוב.':ok>=5?'בסיס טוב. כדאי לעבור שוב על התחנות המסומנות.':'כדאי לעבור על התחנות ולנסות סימולציה נוספת.';
+ view.append(h('div',{class:'score'},`<span class="big">${ok}/${n}</span><span class="verdict">${verdict}<br><span style="color:var(--muted);font-size:.9rem">זמן: ${mins} דק׳ מתוך 20</span></span>`));
+ const by={};exam.qs.forEach((q,k)=>{const s=q.st;by[s.id]=by[s.id]||{s,ok:0,n:0};by[s.id].n++;if(exam.res[k]===true)by[s.id].ok++;});
+ const br=h('div',{class:'break'});Object.values(by).sort((a,b)=>a.s.n-b.s.n).forEach(b=>br.append(h('span',{class:b.ok===b.n?'ok':'no'},`${b.s.n}. ${b.s.name} · ${b.ok}/${b.n}`)));view.append(br);
+ const again=h('button',{type:'button',class:'btn brass'},'סימולציה חדשה');again.onclick=startExam;view.append(again);
+ view.append(h('p',{class:'label',style:'margin-top:26px'},'פתרונות מלאים'));const rv=h('div',{class:'rev'});
+ exam.qs.forEach((q,k)=>{const r=exam.res[k];const c=h('article',{class:'qcard '+(r===true?'ok':'no')});
+  c.append(h('div',{class:'qhead'},`<span class="stamp">${r===true?'✓ נכון':r===false?'✗ לא נכון':'דילגת / לא הספקת'}</span><span>${q.st.name}</span>`));
+  c.append(h('div',{class:'qtext'},M(q.q)));
+  if(q.t==='mcq')c.append(h('div',{class:'fb info'},`<b>התשובה: </b>${M(q.opts[q.a])}`));
+  else if(q.t==='num')c.append(h('div',{class:'fb info'},`<b>התשובה: ${q.ans||q.a}${q.unit?' '+q.unit:''}</b>`));
+  c.append(h('div',{class:'fb '+(r===true?'good':'warn')},`<b>פתרון:</b>${M(q.sol)}`));
+  if(r!==true)c.append(h('div',{class:'snav',style:'margin-top:10px'},`<a href="#${q.st.id}">לתרגול בתחנה ${q.st.n} ←</a>`));rv.append(c);});
+ view.append(rv);}
+
+/* ---------- router ---------- */
+function route(){const id=location.hash.slice(1);if(SBY[id])renderStation(SBY[id]);else if(id==='exam')renderExam();else if(id==='sheet')renderSheet();else renderMap();progress();window.scrollTo(0,0);}
+addEventListener('hashchange',route);route();
+</script>
+
+</body>
+</html>
